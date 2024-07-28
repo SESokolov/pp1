@@ -3,10 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,24 +24,24 @@ public class UserDaoJDBCImpl implements UserDao {
                 + "age integer NOT NULL"
                 + ")";
 
-        try (Statement statement = conn.createStatement();){
+        try (PreparedStatement statement = conn.prepareStatement(createTableSQL);){
 
-            statement.execute(createTableSQL);
-            System.out.println("Table \"" + tableName + "\" is created!");
+            statement.executeUpdate();
+            System.out.println("Table is created!");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Table is not created!");
         }
     }
 
     public void dropUsersTable() {
         String dropTableSQL = "DROP TABLE IF EXISTS " + tableName;
 
-        try (Statement statement = conn.createStatement();){
+        try (PreparedStatement statement = conn.prepareStatement(dropTableSQL);){
 
-            statement.execute(dropTableSQL);
-            System.out.println("Table \"" + tableName + "\" is deleted!");
+            statement.executeUpdate();
+            System.out.println("Table is deleted!");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Table is not deleted!");
         }
     }
 
@@ -52,12 +49,12 @@ public class UserDaoJDBCImpl implements UserDao {
         String insertTableSQL = "INSERT INTO " + tableName
                 + "(name, lastName, age) " + "VALUES"
                 + "('" + name + "','" + lastName + "'," + age +")";
-        try (Statement statement = conn.createStatement();){
+        try (PreparedStatement statement = conn.prepareStatement(insertTableSQL);){
 
-            statement.execute(insertTableSQL);
+            statement.executeUpdate();
             System.out.println("User с именем – " + name + " добавлен в базу данных");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("User с именем – " + name + " не добавлен в базу данных");
         }
 
     }
@@ -65,12 +62,12 @@ public class UserDaoJDBCImpl implements UserDao {
     public void removeUserById(long id) {
         String removeUserByIdSQL = "DELETE FROM " + tableName + " where id = " + id;
 
-        try (Statement statement = conn.createStatement();){
+        try (PreparedStatement statement = conn.prepareStatement(removeUserByIdSQL);){
 
-            statement.execute(removeUserByIdSQL);
-            System.out.println("Record with id=" + id + " delete from table \"" + tableName + "\".");
+            statement.executeUpdate();
+            System.out.println("Record with id=" + id + " delete from table.");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Record with id=" + id + " delete from table.");
         }
 
 }
@@ -80,8 +77,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
         String getAllUsersSQL = "SELECT * from " + tableName;
 
-        try (Statement statement = conn.createStatement();){
-            try (ResultSet rs = statement.executeQuery(getAllUsersSQL)) {
+        try (PreparedStatement statement = conn.prepareStatement(getAllUsersSQL);){
+            try (ResultSet rs = statement.executeQuery()) {
                 userList = new ArrayList<User>();
 
                 while (rs.next()) {
@@ -98,7 +95,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error in receiving data.");
         }
 
         return userList;
@@ -107,12 +104,12 @@ public class UserDaoJDBCImpl implements UserDao {
     public void cleanUsersTable() {
         String cleanUsersTableSQL = "TRUNCATE TABLE " + tableName;
 
-        try (Statement statement = conn.createStatement();){
+        try (PreparedStatement statement = conn.prepareStatement(cleanUsersTableSQL);){
 
-            statement.execute(cleanUsersTableSQL);
-            System.out.println("Table \"" + tableName + "\" is cleaned.");
+            statement.executeUpdate();
+            System.out.println("Table is cleaned.");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Table is not cleaned.");
         }
     }
 }
