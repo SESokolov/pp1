@@ -29,6 +29,8 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             session.createSQLQuery(createTableSQL).executeUpdate();
             session.getTransaction().commit();
+        } catch (org.hibernate.HibernateException e) {
+            System.out.println("Table is not created.");
         }
 
     }
@@ -40,6 +42,8 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             session.createSQLQuery(dropTableSQL).executeUpdate();
             session.getTransaction().commit();
+        } catch (org.hibernate.HibernateException e) {
+            System.out.println("Table is not dropped");
         }
 
     }
@@ -50,6 +54,9 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             session.save(new User(name, lastName, age));
             session.getTransaction().commit();
+            System.out.println("User с именем – " + name + " добавлен в базу данных");
+        } catch (org.hibernate.HibernateException e) {
+            System.out.println("User с именем – " + name + " не добавлен в базу данных");
         }
 
     }
@@ -62,9 +69,9 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             session.createQuery(removeUserByIdSQL).executeUpdate();
             session.getTransaction().commit();
-            System.out.println("Record with id=" + id + " delete from table \"" + tableName + "\".");
+            System.out.println("Record with id=" + id + " delete from table.");
         } catch (org.hibernate.HibernateException e) {
-            e.printStackTrace();
+            System.out.println("Record with id=" + id + " delete from table.");
         }
 
     }
@@ -80,7 +87,7 @@ public class UserDaoHibernateImpl implements UserDao {
             userList = session.createQuery(getAllUsersSQL).getResultList();
             session.getTransaction().commit();
         } catch (org.hibernate.HibernateException e) {
-            e.printStackTrace();
+            System.out.println("Error receiving records from table.");
         }
 
         return userList;
@@ -94,6 +101,8 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             session.createQuery(cleanUsersTableSQL).executeUpdate();
             session.getTransaction().commit();
+        } catch (org.hibernate.HibernateException e) {
+            System.out.println("Error cleaning table.");
         }
     }
 }
